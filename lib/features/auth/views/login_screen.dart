@@ -125,16 +125,16 @@ class _LoginScreenState extends State<LoginScreen> {
 
                   // --- PHẦN 4: NÚT ĐĂNG NHẬP ---
                   // AnimatedBuilder lắng nghe isLoading từ controller để cập nhật nút
-                  AnimatedBuilder(
-                    animation: _authController,
+                  AnimatedBuilder( // Sử dụng hàm này thay thế cho hàm setState(), để tránh trường hợp vẽ lại toàn bộ màn hình, ở đây chỉ thay đổi trạng thái xoay vòng của nút đăng nhập khi load dữ liệu
+                    animation: _authController, // gán ghi dữ liệu vào authController
                     builder: (context, _) {
                       return CustomButton(
                         text: 'Đăng nhập',
-                        isLoading: _authController.isLoading,
+                        isLoading: _authController.isLoading, // Truyền trạng thái xoay vòng cho nút
                         onPressed: _authController.isLoading
-                            ? null
+                            ? null // Vô hiệu hóa nút tránh gửi request liên tục
                             : () {
-                                _authController.login(
+                                _authController.login( // Gửi dữ liệu đang nhập đi
                                   context: context,
                                   username: _usernameController.text,
                                   password: _passwordController.text,
@@ -163,7 +163,7 @@ class _LoginScreenState extends State<LoginScreen> {
                           Navigator.push(
                             context,
                             MaterialPageRoute(
-                              builder: (context) => const RegisterScreen(),
+                              builder: (context) => const RegisterScreen(), // chuyển sang màn hình đăng ký
                             ),
                           );
                         },

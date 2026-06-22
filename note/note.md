@@ -54,3 +54,32 @@ lib/
 
 =====================================================
 1. flutter pub add http
+
+
+
+# Dưới đây là 5 bước của quy trình vận hành:
+
+- Bước 1: Khách hàng order (Từ Giao diện - UI)
+Người dùng gõ "admin" vào ô tài khoản, gõ "123456" vào ô mật khẩu trên màn hình login_screen.dart. Khi người dùng bấm nút Đăng nhập, nút này gọi hàm _authController.login(...) và truyền 2 dòng chữ kia cho Controller.
+
+- Bước 2: Quản lý kiểm tra vé xe (Controller Validate)
+auth_controller.dart nhận được dữ liệu. Trước khi làm gì tốn sức, nó tự kiểm tra nhanh: "Khách có để trống ô nào không?". 
+    Nếu trống: Nó từ chối ngay, hiện bảng màu đỏ "Vui lòng nhập đầy đủ thông tin" và dừng lại luôn, không làm phiền nhà bếp.
+
+    Nếu đầy đủ: Nó lôi cái bảng "Vui lòng đợi..." ra đặt lên bàn khách (bằng lệnh _setLoading(true) làm cái nút xoay vòng vòng).
+
+- Bước 3: Giao việc cho Nhà bếp / Shipper (Gọi Service)
+Controller mang gói hàng (username, password) chạy xuống đưa cho lớp auth_service.dart bằng lệnh AuthService.login(...). Nhiệm vụ duy nhất của auth_service.dart là làm shipper. Nó đóng gói dữ liệu thành chuẩn mạng (JSON), gắn địa chỉ giao hàng (ApiEndpoints.login) và dùng xe chở hàng (ApiClient.post) phóng thẳng lên Server (Backend của bạn).
+
+- Bước 4: Server phản hồi và Shipper mang hàng về (Xử lý Response)
+Server kiểm tra trong Database xem tài khoản có đúng không, rồi gửi trả lại một bưu kiện. Shipper auth_service.dart nhận bưu kiện đó. Nhỡ Server gửi về một đống lộn xộn, Shipper sẽ dùng hàm _parseResponse để bóc tách, sắp xếp lại gọn gàng thành một cái Hộp (Map) chứa 2 ngăn: Mã trạng thái (statusCode) và Lời nhắn (message). Shipper đưa lại cái Hộp này cho Quản lý (AuthController).
+
+- Bước 5: Quản lý báo cáo khách hàng (Cập nhật UI)
+Quản lý (AuthController) cầm cái hộp trên tay. Việc đầu tiên là cất cái bảng "Vui lòng đợi..." đi bằng lệnh _setLoading(false) (nút ngừng xoay và hiện lại chữ Đăng nhập). Tiếp theo, nó mở hộp ra xem Mã trạng thái là bao nhiêu:
+
+    Nếu là 200 (Thành công): Mỉm cười, hiện bảng màu xanh "Đăng nhập thành công". (Sau này bạn sẽ code thêm lệnh mở cửa cho khách vào app ở bước này).
+
+    Nếu là Lỗi (400, 401, 500...): Hiện bảng màu đỏ, đọc đúng cái lời nhắn mà Server gửi về (ví dụ: "Sai mật khẩu" hoặc "Tài khoản không tồn tại").
+
+Tóm lại luồng đi của dữ liệu là:
+Màn hình ➔ Controller ➔ Service ➔ [SERVER/INTERNET] ➔ Service ➔ Controller ➔ Màn hình.

@@ -1,15 +1,19 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import '../services/auth_service.dart';
+import '../../home/views/home_screen.dart';
+import '../../../core/utils/token_storage.dart';
+import '../../../state/user_state.dart';
 
 /// Controller xử lý toàn bộ logic & state cho màn hình Auth.
 /// Dùng ChangeNotifier để các màn hình có thể lắng nghe trạng thái isLoading.
-class AuthController extends ChangeNotifier {
+class AuthController extends ChangeNotifier { // ChangeNotifier thông báo cho giao diện khi có thay đổi 
   bool _isLoading = false;
   bool get isLoading => _isLoading;
 
   void _setLoading(bool value) {
     _isLoading = value;
-    notifyListeners();
+    notifyListeners(); // Dùng để thông báo cho hệ thống trạng thái thay đổi và hiện vòng xoay khi có thao tác bấm ...
   }
 
   // ─── ĐĂNG NHẬP ──────────────────────────────────────────────────────────────
@@ -32,24 +36,41 @@ class AuthController extends ChangeNotifier {
         password: password.trim(),
       );
     } catch (_) {
-      _setLoading(false);
+      _setLoading(false); // Nếu lỗi mạng
       if (context.mounted) {
         _showSnackBar(context, 'Không thể kết nối đến server. Kiểm tra lại kết nối mạng.', isError: true);
       }
       return;
     }
-    _setLoading(false);
+    _setLoading(false); // Sau khi load xong thì hết vòng xoay và trả về kết quả
 
     if (!context.mounted) return;
     final statusCode = result['statusCode'] as int;
     final message = result['message']?.toString() ?? '';
 
     if (statusCode == 200) {
-      // TODO: Lưu token nếu có: result['token'] hoặc result['access_token']
+      // Lấy accessToken và thông tin customer từ response
+      final data       = result['data'] as Map<String, dynamic>? ?? {};
+      final token      = data['accessToken'] as String? ?? '';
+      final customer   = data['customer']   as Map<String, dynamic>? ?? {};
+
+      // Lưu vào disk (SharedPreferences) — dùng khi mở lại app
+      await TokenStorage.saveSession(accessToken: token, customer: customer);
+
+      if (!context.mounted) return;
+      // Lưu vào RAM (UserState) — dùng ngay trong phiên hiện tại
+      context.read<UserState>().setUser(accessToken: token, customer: customer);
+
       _showSnackBar(context, 'Đăng nhập thành công! Chào mừng bạn trở lại.');
-      // TODO: Điều hướng về màn hình chính
-      // Navigator.pushReplacementNamed(context, '/home');
-    } else {
+
+      if (!context.mounted) return;
+      // Điều hướng về màn hình chính, xóa toàn bộ stack để không back về login
+      Navigator.pushAndRemoveUntil(
+        context,
+        MaterialPageRoute(builder: (context) => const HomeScreen()),
+        (route) => false,
+      );
+    } else { // Hoặc thông báo lỗi
       final errorMsg = message.isNotEmpty ? message : 'Đăng nhập thất bại ($statusCode).';
       _showSnackBar(context, errorMsg, isError: true);
     }

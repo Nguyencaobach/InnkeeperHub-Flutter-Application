@@ -23,6 +23,7 @@ class AuthService {
         'password': password,
         'phone_number': phoneNumber,
       },
+      requireAuth: false, // Endpoint công khai, không cần token
     );
     return _parseResponse(response.statusCode, response.body);
   }
@@ -40,6 +41,7 @@ class AuthService {
         'username': username,
         'password': password,
       },
+      requireAuth: false, // Endpoint công khai, không cần token
     );
     return _parseResponse(response.statusCode, response.body);
   }
@@ -53,6 +55,7 @@ class AuthService {
     final response = await ApiClient.post(
       Uri.parse(ApiEndpoints.forgotPassword),
       body: {'email': email},
+      requireAuth: false, // Endpoint công khai, không cần token
     );
     return _parseResponse(response.statusCode, response.body);
   }
