@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import '../core/theme/app_text_styles.dart';
 import '../core/theme/app_colors.dart';
 
@@ -7,6 +8,8 @@ class CustomTextField extends StatefulWidget { // StatefulWidget là Widget có 
   final String hintText;
   final bool isPassword;
   final TextEditingController? controller;
+  final TextInputType? keyboardType;               // Loại bàn phím hiển thị (số, email, ...)
+  final List<TextInputFormatter>? inputFormatters; // Bộ lọc ký tự được nhập vào
 
   const CustomTextField({
     super.key,
@@ -14,6 +17,8 @@ class CustomTextField extends StatefulWidget { // StatefulWidget là Widget có 
     required this.hintText, // Chữ mờ trong ô nhập
     this.isPassword = false, // Mặc định là false (không phải mật khẩu)
     this.controller, // Ghi lại giá trị được nhập vào
+    this.keyboardType,
+    this.inputFormatters,
   });
 
   @override
@@ -42,11 +47,13 @@ class _CustomTextFieldState extends State<CustomTextField> {
           style: AppTextStyles.inputLabel, // Gọi inputLabel từ app_text sang
         ),
         const SizedBox(height: 8), // Khoảng cách giữa Label và Ô nhập
-        
+
         // 2. Ô nhập liệu (TextField)
         TextField(
           controller: widget.controller,
-          obscureText: _obscureText, // Thuộc tính ẩn chữ của Flutter
+          obscureText: _obscureText,             // Thuộc tính ẩn chữ của Flutter
+          keyboardType: widget.keyboardType,     // Loại bàn phím
+          inputFormatters: widget.inputFormatters, // Bộ lọc ký tự
           decoration: InputDecoration(
             hintText: widget.hintText,
             // Nếu là mật khẩu thì hiển thị icon con mắt (suffixIcon)

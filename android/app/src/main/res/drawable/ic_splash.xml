@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Icon trong suốt để thay thế icon Flutter mặc định trên Android 12+ -->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="288dp"
+    android:height="288dp"
+    android:viewportWidth="288"
+    android:viewportHeight="288">
+    <!-- Không vẽ gì cả = hoàn toàn trong suốt -->
+</vector>

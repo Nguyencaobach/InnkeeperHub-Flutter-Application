@@ -1,8 +1,10 @@
 class ApiEndpoints {
-  // Đảm bảo bạn copy link có chữ https://
-  static const String baseUrl = 'https://<chuỗi-ngẫu-nhiên-của-bạn>.ngrok-free.app/api'; 
-  
-  // Ví dụ các endpoint khác
-  static const String login = '$baseUrl/login';
-  static const String getProfile = '$baseUrl/profile';
+  // Base URL ngrok - customer service auth
+  static const String baseUrl = 'https://marilee-stichomythic-sharla.ngrok-free.dev/api';
+
+  // --- Customer Auth endpoints ---
+  static const String customerAuth = '$baseUrl/customer-auth';
+  static const String register    = '$customerAuth/register';
+  static const String login       = '$customerAuth/login';
+  static const String forgotPassword = '$customerAuth/forgot-password';
 }

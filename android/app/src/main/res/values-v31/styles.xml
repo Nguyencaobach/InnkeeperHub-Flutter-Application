@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Override cho Android 12+ (API 31+) để ẩn icon mặc định của hệ thống -->
+<resources>
+    <style name="LaunchTheme" parent="Theme.SplashScreen">
+        <!-- Nền trắng -->
+        <item name="windowSplashScreenBackground">#FFFFFF</item>
+        <!-- Dùng icon trong suốt để không hiện icon Flutter -->
+        <item name="windowSplashScreenAnimatedIcon">@drawable/ic_splash</item>
+        <!-- Theme chuyển sang khi splash kết thúc -->
+        <item name="postSplashScreenTheme">@style/NormalTheme</item>
+    </style>
+    <style name="NormalTheme" parent="@android:style/Theme.Light.NoTitleBar">
+        <item name="android:windowBackground">?android:colorBackground</item>
+    </style>
+</resources>

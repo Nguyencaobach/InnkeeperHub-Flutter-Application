@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 // Thay đổi đường dẫn import này sao cho khớp với tên project của bạn nếu cần
 import 'core/theme/app_theme.dart';
-import 'features/auth/views/login_screen.dart';
+import 'features/auth/views/splash_screen.dart';
 
 void main() {
   // Điểm khởi chạy của toàn bộ ứng dụng
@@ -21,8 +21,8 @@ class MyApp extends StatelessWidget {
       // Áp dụng bộ Theme tổng mà chúng ta đã làm ở Bước 1
       theme: AppTheme.lightTheme,
       
-      // Đặt màn hình Đăng nhập làm màn hình chính (home)
-      home: const LoginScreen(), 
+      // Splash Screen là màn hình đầu tiên khi mở app
+      home: const SplashScreen(), 
     );
   }
 }

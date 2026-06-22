@@ -43,3 +43,8 @@ kotlin {
 flutter {
     source = "../.."
 }
+
+dependencies {
+    // Thư viện để điều khiển Native Splash Screen trên Android 12+
+    implementation("androidx.core:core-splashscreen:1.0.1")
+}

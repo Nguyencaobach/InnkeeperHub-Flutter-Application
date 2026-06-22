@@ -2,8 +2,13 @@ import 'package:flutter/material.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../shared_widgets/custom_text_field.dart';
 import '../../../shared_widgets/custom_button.dart';
+import '../controllers/auth_controller.dart';
+import 'register_screen.dart';
+import 'forgot_password_screen.dart';
 
-class LoginScreen extends StatefulWidget {
+// Trong giao diện ta dùng các SizedBox để tạo khoảng trống cách nhau
+
+class LoginScreen extends StatefulWidget { // Widget lưu lại trạng thái người dùng nhập
   const LoginScreen({super.key});
 
   @override
@@ -11,32 +16,34 @@ class LoginScreen extends StatefulWidget {
 }
 
 class _LoginScreenState extends State<LoginScreen> {
-  final TextEditingController _usernameController = TextEditingController();
+  final TextEditingController _usernameController = TextEditingController(); // Ghi lại dữ liệu nhập vào
   final TextEditingController _passwordController = TextEditingController();
+  final AuthController _authController = AuthController(); // Controller xử lý logic
 
   @override
   void dispose() {
-    _usernameController.dispose();
+    _usernameController.dispose(); // Tắt ghi dữ liệu khi chuyển sang màn hình khác
     _passwordController.dispose();
+    _authController.dispose();
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: AppColors.background, // Giữ nền trắng sạch sẽ
-      body: SafeArea(
-        child: Center(
-          child: SingleChildScrollView(
-            padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 40.0),
-            child: ConstrainedBox(
-              constraints: const BoxConstraints(maxWidth: 400),
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                crossAxisAlignment: CrossAxisAlignment.stretch,
-                children: [
+    return Scaffold( // Scaffold là nền chính của app nơi chứa tất cả mọi thứ
+      backgroundColor: AppColors.background,
+      body: SafeArea( // SafeArea - Bảo vệ giao diện khỏi các đặc thù che khất mà hình của thiết bị như tai thỏ
+        child: Center( // Center và SingleChildScrollView dùng để cho màn hình vẫn lướt lên xuống được khi hiển thị bàn phím ảo
+          child: SingleChildScrollView( // Thuộc tính child là để lồng widget này trong widget khác
+            padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 40.0), // Đẩy toàn bộ nội dung của Form đăng nhập vào trái phải cách 24px và cách mép trên và dưới 40px
+            child: ConstrainedBox( // Tạo ra container bao bọc tất cả
+              constraints: const BoxConstraints(maxWidth: 400), // Giới hạn chiều rộng của form trên các thiết bị khác
+              child: Column( // Cho mọi thứ xếp theo dọc
+                mainAxisAlignment: MainAxisAlignment.center, // Giúp căn chỉnh cho đối tượng nằm giữa theo trục dọc
+                crossAxisAlignment: CrossAxisAlignment.stretch, // Giúp kéo dãn đối tượng ra hai lề màn hình
+                children: [ // Dùng để gom nhiều thuộc tính hơn
                   // --- PHẦN 1: LOGO VÀ TIÊU ĐỀ ---
-                  RichText(
+                  RichText( // Richtext cho phép tô nhiều màu chữ bên trong một dòng chữ
                     textAlign: TextAlign.center,
                     text: const TextSpan(
                       style: TextStyle(
@@ -82,15 +89,21 @@ class _LoginScreenState extends State<LoginScreen> {
                     isPassword: true,
                     controller: _passwordController,
                   ),
-                  
+
                   const SizedBox(height: 8), // Khoảng cách nhỏ giữa Mật khẩu và Quên mật khẩu
 
                   // --- PHẦN 3: QUÊN MẬT KHẨU (Nằm dưới mật khẩu, lệch phải) ---
-                  Align(
-                    alignment: Alignment.centerRight,
+                  Align( // Dùng để căn lề
+                    alignment: Alignment.centerRight, // Căn lề qua phải luôn
                     child: TextButton(
                       onPressed: () {
-                        // TODO: Chuyển trang Quên mật khẩu
+                        // Chuyển sang màn hình Quên mật khẩu
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => const ForgotPasswordScreen(),
+                          ),
+                        );
                       },
                       style: TextButton.styleFrom(
                         padding: EdgeInsets.zero,
@@ -107,22 +120,34 @@ class _LoginScreenState extends State<LoginScreen> {
                       ),
                     ),
                   ),
-                  
-                  const SizedBox(height: 32), 
+
+                  const SizedBox(height: 32),
 
                   // --- PHẦN 4: NÚT ĐĂNG NHẬP ---
-                  CustomButton(
-                    text: 'Đăng nhập',
-                    onPressed: () {
-                      print('User: ${_usernameController.text}');
-                      print('Pass: ${_passwordController.text}');
+                  // AnimatedBuilder lắng nghe isLoading từ controller để cập nhật nút
+                  AnimatedBuilder(
+                    animation: _authController,
+                    builder: (context, _) {
+                      return CustomButton(
+                        text: 'Đăng nhập',
+                        isLoading: _authController.isLoading,
+                        onPressed: _authController.isLoading
+                            ? null
+                            : () {
+                                _authController.login(
+                                  context: context,
+                                  username: _usernameController.text,
+                                  password: _passwordController.text,
+                                );
+                              },
+                      );
                     },
                   ),
-                  
+
                   const SizedBox(height: 24),
 
                   // --- PHẦN 5: CHƯA CÓ TÀI KHOẢN? ĐĂNG KÝ NGAY ---
-                  Row(
+                  Row( // Dùng để chứa nhiều thuộc tính có thể nằm ngang ví dụ cho dòng chữ CHƯA CÓ TÀI KHOẢN? ĐĂNG KÝ NGAY
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       const Text(
@@ -134,7 +159,13 @@ class _LoginScreenState extends State<LoginScreen> {
                       ),
                       GestureDetector(
                         onTap: () {
-                          // TODO: Chuyển sang màn hình Đăng ký
+                          // Chuyển sang màn hình Đăng ký
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => const RegisterScreen(),
+                            ),
+                          );
                         },
                         child: const Text(
                           'Đăng ký ngay',

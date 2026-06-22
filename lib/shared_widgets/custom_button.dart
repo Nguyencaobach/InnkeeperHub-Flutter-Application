@@ -7,7 +7,7 @@ import 'package:flutter/material.dart';
 
 class CustomButton extends StatelessWidget { // Widget phụ thuộc vào state được truyền vào
   final String text;
-  final VoidCallback onPressed; // Hành động xảy ra khi người dùng bấm vào nút
+  final VoidCallback? onPressed; // Hành động xảy ra khi người dùng bấm vào nút (nullable để hỗ trợ disable)
   final bool isLoading;
 
   const CustomButton({
@@ -35,7 +35,7 @@ class CustomButton extends StatelessWidget { // Widget phụ thuộc vào state 
         ),
       ),
       child: ElevatedButton( // Lõi nút bấm được đặt là child của Container
-        onPressed: isLoading ? null : onPressed, // Nếu đang load thì vô hiệu hóa nút bấm
+        onPressed: (isLoading || onPressed == null) ? null : onPressed, // Nếu đang load hoặc onPressed null thì vô hiệu hóa nút
         style: ElevatedButton.styleFrom(
           // Làm trong suốt nền và bóng để lộ màu gradient của Container phía dưới
           backgroundColor: Colors.transparent, 
