@@ -6,7 +6,9 @@ import 'features/auth/views/splash_screen.dart';
 import 'features/auth/views/login_screen.dart';
 import 'state/user_state.dart';
 
-void main() {
+void main() async {
+  // Bắt buộc phải có trước khi dùng plugin (SharedPreferences, v.v.)
+  WidgetsFlutterBinding.ensureInitialized();
   // Điểm khởi chạy của toàn bộ ứng dụng
   runApp(const MyApp());
 }
