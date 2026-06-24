@@ -1,80 +1,56 @@
+// lib/state/user_state.dart
 import 'package:flutter/material.dart';
 import '../core/utils/token_storage.dart';
+import '../core/models/user_model.dart'; // Gọi cái khuôn vào
 
-/// Global state lưu thông tin user đang đăng nhập trong RAM.
-/// Mọi màn hình đều có thể đọc/lắng nghe thay đổi thông qua Provider.
-///
-/// Sơ đồ luồng dữ liệu:
-///   Backend JSON ──► AuthController.login()
-///                        ├── TokenStorage.saveSession()  (lưu disk - dùng khi mở lại app)
-///                        └── UserState.setUser()         (lưu RAM  - dùng trong phiên hiện tại)
 class UserState extends ChangeNotifier {
-  // ─── DỮ LIỆU USER ───────────────────────────────────────────────────────────
+  // ─── DỮ LIỆU USER (Siêu Gọn Nhẹ) ────────────────────────────────────────
   String _accessToken = '';
-  String _customerId  = '';
-  String _username    = '';
-  String _fullName    = '';
-  String _email       = '';
-  String _phoneNumber = '';
-  String _avatarUrl   = '';
+  UserModel? _currentUser; // Thay vì 7 biến, ta chỉ cần 1 biến chứa Thẻ căn cước!
 
-  // ─── GETTERS (các màn hình đọc qua đây) ─────────────────────────────────────
+  // ─── GETTERS (Bí quyết giữ nguyên file View) ────────────────────────────
+  // File HomeScreen đang gọi: user.fullName, user.email...
+  // Nên ta làm các hàm get "trung gian", tự động chui vào _currentUser lấy ra cho nó.
+  // Dấu '?.' và '??' nghĩa là: Nếu chưa có thẻ thì trả về chuỗi rỗng để app không bị sập.
+  
   String get accessToken => _accessToken;
-  String get customerId  => _customerId;
-  String get username    => _username;
-  String get fullName    => _fullName;
-  String get email       => _email;
-  String get phoneNumber => _phoneNumber;
-  String get avatarUrl   => _avatarUrl;
+  String get customerId  => _currentUser?.customerId ?? '';
+  String get username    => _currentUser?.username ?? '';
+  String get fullName    => _currentUser?.fullName ?? '';
+  String get email       => _currentUser?.email ?? '';
+  String get phoneNumber => _currentUser?.phoneNumber ?? '';
+  String get avatarUrl   => _currentUser?.avatarUrl ?? '';
 
-  /// Trả về true nếu user đang đăng nhập (có token trong RAM).
-  bool get isLoggedIn => _accessToken.isNotEmpty;
+  bool get isLoggedIn => _accessToken.isNotEmpty && _currentUser != null;
 
-  // ─── CẬP NHẬT SAU KHI ĐĂNG NHẬP ────────────────────────────────────────────
-  /// Gọi bởi AuthController sau khi login thành công.
+  // ─── CẬP NHẬT SAU KHI ĐĂNG NHẬP ─────────────────────────────────────────
+  // Giờ hàm này chỉ cần nhận đúng 2 món đồ
   void setUser({
     required String accessToken,
-    required Map<String, dynamic> customer,
+    required UserModel user,
   }) {
     _accessToken = accessToken;
-    _customerId  = customer['customer_id']  as String? ?? '';
-    _username    = customer['username']     as String? ?? '';
-    _fullName    = customer['full_name']    as String? ?? '';
-    _email       = customer['email']        as String? ?? '';
-    _phoneNumber = customer['phone_number'] as String? ?? '';
-    _avatarUrl   = customer['avatar_url']   as String? ?? '';
-    notifyListeners(); // Thông báo cho tất cả màn hình đang lắng nghe
+    _currentUser = user; // Đeo thẻ căn cước lên cổ
+    notifyListeners(); // Hét lên cho các màn hình vẽ lại
   }
 
-  // ─── KHÔI PHỤC KHI MỞ LẠI APP ──────────────────────────────────────────────
-  /// Đọc lại từ TokenStorage (disk) khi app khởi động.
-  /// Gọi trong SplashScreen hoặc main() để tự động đăng nhập lại.
+  // ─── KHÔI PHỤC KHI MỞ LẠI APP ───────────────────────────────────────────
   Future<void> loadFromStorage() async {
-    final token    = await TokenStorage.getAccessToken();
-    final userInfo = await TokenStorage.getUserInfo();
-    if (token != null && token.isNotEmpty) {
+    final token = await TokenStorage.getAccessToken();
+    final user  = await TokenStorage.getUser(); // Gọi hàm getUser mới
+    
+    if (token != null && user != null) {
       _accessToken = token;
-      _customerId  = userInfo['customer_id']  ?? '';
-      _username    = userInfo['username']     ?? '';
-      _fullName    = userInfo['full_name']    ?? '';
-      _email       = userInfo['email']        ?? '';
-      _phoneNumber = userInfo['phone_number'] ?? '';
-      _avatarUrl   = userInfo['avatar_url']   ?? '';
+      _currentUser = user;
       notifyListeners();
     }
   }
 
-  // ─── ĐĂNG XUẤT ──────────────────────────────────────────────────────────────
-  /// Xóa dữ liệu khỏi RAM và disk. Gọi khi user bấm Đăng xuất.
+  // ─── ĐĂNG XUẤT ──────────────────────────────────────────────────────────
   Future<void> logout() async {
     await TokenStorage.clearSession();
     _accessToken = '';
-    _customerId  = '';
-    _username    = '';
-    _fullName    = '';
-    _email       = '';
-    _phoneNumber = '';
-    _avatarUrl   = '';
+    _currentUser = null; // Lột thẻ căn cước vứt đi
     notifyListeners();
   }
 }

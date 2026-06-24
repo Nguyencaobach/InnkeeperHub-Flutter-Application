@@ -1,13 +1,13 @@
+// lib/features/auth/services/auth_service.dart
 import 'dart:convert';
 import '../../../core/network/api_client.dart';
 import '../../../core/constants/api_endpoints.dart';
+import '../models/auth_response_model.dart'; // Gọi cái khuôn Hộp bưu phẩm vào
 
-/// Lớp chịu trách nhiệm giao tiếp với backend API cho phần auth khách hàng.
 class AuthService {
   // ─── ĐĂNG KÝ ────────────────────────────────────────────────────────────────
-  /// Gọi POST /api/customer-auth/register
-  /// Body gửi lên: { full_name, username, email, password }
-  static Future<Map<String, dynamic>> register({
+  // Đăng ký chỉ cần biết thành công hay thất bại, không cần trả về dữ liệu nên dùng Future<void>
+  static Future<void> register({
     required String fullName,
     required String username,
     required String email,
@@ -23,15 +23,19 @@ class AuthService {
         'password': password,
         'phone_number': phoneNumber,
       },
-      requireAuth: false, // Endpoint công khai, không cần token
+      requireAuth: false, 
     );
-    return _parseResponse(response.statusCode, response.body);
+
+    // Nếu KHÔNG thành công (khác 200 và 201), ném lỗi ngay lập tức
+    if (response.statusCode != 200 && response.statusCode != 201) {
+      final body = jsonDecode(response.body);
+      throw Exception(body['message'] ?? 'Đăng ký thất bại');
+    }
   }
 
   // ─── ĐĂNG NHẬP ──────────────────────────────────────────────────────────────
-  /// Gọi POST /api/customer-auth/login
-  /// Body gửi lên: { username, password }
-  static Future<Map<String, dynamic>> login({
+  // Đăng nhập thành công BẮT BUỘC trả về cái AuthResponseModel (Chìa khóa + Thẻ căn cước)
+  static Future<AuthResponseModel> login({
     required String username,
     required String password,
   }) async {
@@ -41,36 +45,33 @@ class AuthService {
         'username': username,
         'password': password,
       },
-      requireAuth: false, // Endpoint công khai, không cần token
+      requireAuth: false,
     );
-    return _parseResponse(response.statusCode, response.body);
+
+    final body = jsonDecode(response.body);
+
+    if (response.statusCode == 200) {
+      // Ép kiểu JSON thẳng vào khuôn AuthResponseModel và gửi về cho Controller
+      return AuthResponseModel.fromJson(body['data']);
+    } else {
+      // Nếu sai pass hoặc user không tồn tại -> Ném lỗi
+      throw Exception(body['message'] ?? 'Đăng nhập thất bại');
+    }
   }
 
   // ─── QUÊN MẬT KHẨU ──────────────────────────────────────────────────────────
-  /// Gọi POST /api/customer-auth/forgot-password
-  /// Body gửi lên: { email }
-  static Future<Map<String, dynamic>> forgotPassword({
+  static Future<void> forgotPassword({
     required String email,
   }) async {
     final response = await ApiClient.post(
       Uri.parse(ApiEndpoints.forgotPassword),
       body: {'email': email},
-      requireAuth: false, // Endpoint công khai, không cần token
+      requireAuth: false,
     );
-    return _parseResponse(response.statusCode, response.body);
-  }
 
-  // ─── HELPER ─────────────────────────────────────────────────────────────────
-  /// Parse response body về Map, kèm statusCode để controller xử lý
-  static Map<String, dynamic> _parseResponse(int statusCode, String body) {
-    try {
-      final data = jsonDecode(body) as Map<String, dynamic>;
-      return {'statusCode': statusCode, ...data};
-    } catch (_) {
-      return {
-        'statusCode': statusCode,
-        'message': body.isNotEmpty ? body : 'Lỗi không xác định từ server',
-      };
+    if (response.statusCode != 200) {
+      final body = jsonDecode(response.body);
+      throw Exception(body['message'] ?? 'Lỗi quên mật khẩu');
     }
   }
 }

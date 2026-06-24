@@ -1,71 +1,57 @@
+// lib/core/utils/token_storage.dart
+import 'dart:convert'; // Thư viện dùng để chuyển đổi Map <-> Chuỗi JSON
 import 'package:shared_preferences/shared_preferences.dart';
+import '../models/user_model.dart'; // Gọi cái khuôn UserModel vào
 
-/// Tiện ích lưu trữ token JWT và thông tin user vào bộ nhớ cục bộ của thiết bị.
-/// Sử dụng SharedPreferences — hoạt động tốt trên cả thiết bị thật lẫn máy ảo.
 class TokenStorage {
-  // ─── KEYS ───────────────────────────────────────────────────────────────────
-  static const _keyAccessToken  = 'access_token';
-  static const _keyCustomerId   = 'customer_id';
-  static const _keyUsername     = 'username';
-  static const _keyFullName     = 'full_name';
-  static const _keyEmail        = 'email';
-  static const _keyPhoneNumber  = 'phone_number';
-  static const _keyAvatarUrl    = 'avatar_url';
+  // ─── CHỈ CÒN LẠI 2 CHÌA KHÓA CHÍNH (Thay vì 7 cái như cũ) ───────────────
+  static const _keyAccessToken  = 'access_token'; // Ngăn cất chìa khóa
+  static const _keyUserData     = 'user_data';    // Ngăn cất Thẻ căn cước (UserModel)
 
-  // ─── LƯU TOKEN + THÔNG TIN USER ─────────────────────────────────────────────
-  /// Gọi sau khi đăng nhập thành công để lưu toàn bộ thông tin phiên làm việc.
+  // ─── LƯU PHIÊN LÀM VIỆC ─────────────────────────────────────────────────
   static Future<void> saveSession({
     required String accessToken,
-    required Map<String, dynamic> customer,
+    required UserModel user, // Nhận vào nguyên 1 cái khuôn UserModel
   }) async {
     final prefs = await SharedPreferences.getInstance();
+    
+    // 1. Cất chìa khóa
     await prefs.setString(_keyAccessToken, accessToken);
-    await prefs.setString(_keyCustomerId,  customer['customer_id']  ?? '');
-    await prefs.setString(_keyUsername,    customer['username']      ?? '');
-    await prefs.setString(_keyFullName,    customer['full_name']     ?? '');
-    await prefs.setString(_keyEmail,       customer['email']         ?? '');
-    await prefs.setString(_keyPhoneNumber, customer['phone_number']  ?? '');
-    await prefs.setString(_keyAvatarUrl,   customer['avatar_url']    ?? '');
+    
+    // 2. Cất Thẻ căn cước: 
+    // Vì ổ cứng chỉ lưu được "Chữ" (String), nên ta dùng jsonEncode để biến cái UserModel thành 1 chuỗi chữ thô rồi cất đi.
+    await prefs.setString(_keyUserData, jsonEncode(user.toJson()));
   }
 
-  // ─── ĐỌC TOKEN ──────────────────────────────────────────────────────────────
-  /// Lấy access token đang lưu (null nếu chưa đăng nhập).
+  // ─── ĐỌC TOKEN ──────────────────────────────────────────────────────────
   static Future<String?> getAccessToken() async {
     final prefs = await SharedPreferences.getInstance();
     return prefs.getString(_keyAccessToken);
   }
 
-  // ─── ĐỌC THÔNG TIN USER ─────────────────────────────────────────────────────
-  /// Lấy toàn bộ thông tin user đang lưu dưới dạng Map.
-  static Future<Map<String, String?>> getUserInfo() async {
+  // ─── ĐỌC THÔNG TIN USER ─────────────────────────────────────────────────
+  // Thay vì trả về Map, giờ ta trả về luôn đối tượng UserModel xịn sò
+  static Future<UserModel?> getUser() async {
     final prefs = await SharedPreferences.getInstance();
-    return {
-      'customer_id':   prefs.getString(_keyCustomerId),
-      'username':      prefs.getString(_keyUsername),
-      'full_name':     prefs.getString(_keyFullName),
-      'email':         prefs.getString(_keyEmail),
-      'phone_number':  prefs.getString(_keyPhoneNumber),
-      'avatar_url':    prefs.getString(_keyAvatarUrl),
-    };
+    final userString = prefs.getString(_keyUserData); // Lấy chuỗi chữ thô ra
+    
+    if (userString != null && userString.isNotEmpty) {
+      // Dịch ngược chuỗi chữ thô đó thành Map, rồi ép vào khuôn UserModel
+      final userMap = jsonDecode(userString) as Map<String, dynamic>;
+      return UserModel.fromJson(userMap);
+    }
+    return null; // Nếu chưa đăng nhập thì trả về null
   }
 
-  // ─── KIỂM TRA ĐÃ ĐĂNG NHẬP CHƯA ────────────────────────────────────────────
-  /// Trả về true nếu có token hợp lệ đang được lưu.
+  // ─── KIỂM TRA ĐĂNG NHẬP VÀ ĐĂNG XUẤT ────────────────────────────────────
   static Future<bool> isLoggedIn() async {
     final token = await getAccessToken();
     return token != null && token.isNotEmpty;
   }
 
-  // ─── XÓA TOKEN (ĐĂNG XUẤT) ──────────────────────────────────────────────────
-  /// Xóa toàn bộ dữ liệu phiên làm việc. Gọi khi user đăng xuất.
   static Future<void> clearSession() async {
     final prefs = await SharedPreferences.getInstance();
     await prefs.remove(_keyAccessToken);
-    await prefs.remove(_keyCustomerId);
-    await prefs.remove(_keyUsername);
-    await prefs.remove(_keyFullName);
-    await prefs.remove(_keyEmail);
-    await prefs.remove(_keyPhoneNumber);
-    await prefs.remove(_keyAvatarUrl);
+    await prefs.remove(_keyUserData); // Chỉ cần xóa 2 ngăn là sạch bách!
   }
 }

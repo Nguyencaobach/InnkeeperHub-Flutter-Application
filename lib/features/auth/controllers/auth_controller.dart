@@ -1,3 +1,4 @@
+// lib/features/auth/controllers/auth_controller.dart
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../services/auth_service.dart';
@@ -5,15 +6,13 @@ import '../../home/views/home_screen.dart';
 import '../../../core/utils/token_storage.dart';
 import '../../../state/user_state.dart';
 
-/// Controller xử lý toàn bộ logic & state cho màn hình Auth.
-/// Dùng ChangeNotifier để các màn hình có thể lắng nghe trạng thái isLoading.
-class AuthController extends ChangeNotifier { // ChangeNotifier thông báo cho giao diện khi có thay đổi 
+class AuthController extends ChangeNotifier {
   bool _isLoading = false;
   bool get isLoading => _isLoading;
 
   void _setLoading(bool value) {
     _isLoading = value;
-    notifyListeners(); // Dùng để thông báo cho hệ thống trạng thái thay đổi và hiện vòng xoay khi có thao tác bấm ...
+    notifyListeners(); 
   }
 
   // ─── ĐĂNG NHẬP ──────────────────────────────────────────────────────────────
@@ -22,57 +21,50 @@ class AuthController extends ChangeNotifier { // ChangeNotifier thông báo cho 
     required String username,
     required String password,
   }) async {
-    // --- Validate đầu vào ---
     if (username.trim().isEmpty || password.trim().isEmpty) {
       _showSnackBar(context, 'Vui lòng nhập đầy đủ thông tin.', isError: true);
       return;
     }
 
     _setLoading(true);
-    late final Map<String, dynamic> result;
     try {
-      result = await AuthService.login(
+      // 1. Chỉ việc ngửa tay xin cái AuthResponseModel từ Service
+      final authResponse = await AuthService.login(
         username: username.trim(),
         password: password.trim(),
       );
-    } catch (_) {
-      _setLoading(false); // Nếu lỗi mạng
-      if (context.mounted) {
-        _showSnackBar(context, 'Không thể kết nối đến server. Kiểm tra lại kết nối mạng.', isError: true);
-      }
-      return;
-    }
-    _setLoading(false); // Sau khi load xong thì hết vòng xoay và trả về kết quả
 
-    if (!context.mounted) return;
-    final statusCode = result['statusCode'] as int;
-    final message = result['message']?.toString() ?? '';
-
-    if (statusCode == 200) {
-      // Lấy accessToken và thông tin customer từ response
-      final data       = result['data'] as Map<String, dynamic>? ?? {};
-      final token      = data['accessToken'] as String? ?? '';
-      final customer   = data['customer']   as Map<String, dynamic>? ?? {};
-
-      // Lưu vào disk (SharedPreferences) — dùng khi mở lại app
-      await TokenStorage.saveSession(accessToken: token, customer: customer);
+      // 2. Ném model cho Két sắt (Ổ cứng) cất
+      await TokenStorage.saveSession(
+        accessToken: authResponse.accessToken, 
+        user: authResponse.user,
+      );
 
       if (!context.mounted) return;
-      // Lưu vào RAM (UserState) — dùng ngay trong phiên hiện tại
-      context.read<UserState>().setUser(accessToken: token, customer: customer);
+      
+      // 3. Ném model cho UserState (RAM) đeo lên cổ
+      context.read<UserState>().setUser(
+        accessToken: authResponse.accessToken, 
+        user: authResponse.user,
+      );
 
       _showSnackBar(context, 'Đăng nhập thành công! Chào mừng bạn trở lại.');
 
       if (!context.mounted) return;
-      // Điều hướng về màn hình chính, xóa toàn bộ stack để không back về login
       Navigator.pushAndRemoveUntil(
         context,
         MaterialPageRoute(builder: (context) => const HomeScreen()),
         (route) => false,
       );
-    } else { // Hoặc thông báo lỗi
-      final errorMsg = message.isNotEmpty ? message : 'Đăng nhập thất bại ($statusCode).';
-      _showSnackBar(context, errorMsg, isError: true);
+    } catch (e) {
+      // Nếu Service ném lỗi (vd: Sai pass), nhảy ngay vào catch này để báo lỗi cho UI
+      if (context.mounted) {
+        // e.toString() thường có chữ "Exception: " ở đầu, ta cắt bỏ nó đi cho đẹp
+        final errorMsg = e.toString().replaceAll('Exception: ', '');
+        _showSnackBar(context, errorMsg, isError: true);
+      }
+    } finally {
+      _setLoading(false); // Dù thành công hay lỗi thì cũng phải tắt vòng xoay
     }
   }
 
@@ -87,11 +79,8 @@ class AuthController extends ChangeNotifier { // ChangeNotifier thông báo cho 
     required String phoneNumber,
   }) async {
     // --- Validate đầu vào ---
-    if (fullName.trim().isEmpty ||
-        username.trim().isEmpty ||
-        email.trim().isEmpty ||
-        password.trim().isEmpty ||
-        phoneNumber.trim().isEmpty) {
+    if (fullName.trim().isEmpty || username.trim().isEmpty || email.trim().isEmpty ||
+        password.trim().isEmpty || phoneNumber.trim().isEmpty) {
       _showSnackBar(context, 'Vui lòng nhập đầy đủ thông tin.', isError: true);
       return;
     }
@@ -103,7 +92,6 @@ class AuthController extends ChangeNotifier { // ChangeNotifier thông báo cho 
       _showSnackBar(context, 'Email không hợp lệ.', isError: true);
       return;
     }
-    // Validate số điện thoại: chỉ gồm 9-15 chữ số (khớp backend)
     final phoneRegex = RegExp(r'^[0-9]{9,15}$');
     if (!phoneRegex.hasMatch(phoneNumber.trim())) {
       _showSnackBar(context, 'Số điện thoại chỉ gồm 9–15 chữ số.', isError: true);
@@ -111,34 +99,25 @@ class AuthController extends ChangeNotifier { // ChangeNotifier thông báo cho 
     }
 
     _setLoading(true);
-    late final Map<String, dynamic> result;
     try {
-      result = await AuthService.register(
+      await AuthService.register(
         fullName: fullName.trim(),
         username: username.trim(),
         email: email.trim(),
         password: password.trim(),
         phoneNumber: phoneNumber.trim(),
       );
-    } catch (_) {
-      _setLoading(false);
-      if (context.mounted) {
-        _showSnackBar(context, 'Không thể kết nối đến server. Kiểm tra lại kết nối mạng.', isError: true);
-      }
-      return;
-    }
-    _setLoading(false);
-
-    if (!context.mounted) return;
-    final statusCode = result['statusCode'] as int;
-    final message = result['message']?.toString() ?? '';
-
-    if (statusCode == 200 || statusCode == 201) {
+      
+      if (!context.mounted) return;
       _showSnackBar(context, 'Đăng ký thành công! Vui lòng đăng nhập.');
       Navigator.pop(context);
-    } else {
-      final errorMsg = message.isNotEmpty ? message : 'Đăng ký thất bại ($statusCode).';
-      _showSnackBar(context, errorMsg, isError: true);
+    } catch (e) {
+      if (context.mounted) {
+        final errorMsg = e.toString().replaceAll('Exception: ', '');
+        _showSnackBar(context, errorMsg, isError: true);
+      }
+    } finally {
+      _setLoading(false);
     }
   }
 
@@ -153,24 +132,11 @@ class AuthController extends ChangeNotifier { // ChangeNotifier thông báo cho 
     }
 
     _setLoading(true);
-    late final Map<String, dynamic> result;
     try {
-      result = await AuthService.forgotPassword(email: email.trim());
-    } catch (_) {
-      _setLoading(false);
-      if (context.mounted) {
-        _showSnackBar(context, 'Không thể kết nối đến server. Kiểm tra lại kết nối mạng.', isError: true);
-      }
-      return;
-    }
-    _setLoading(false);
-
-    if (!context.mounted) return;
-    final statusCode = result['statusCode'] as int;
-    final message = result['message']?.toString() ?? '';
-
-    if (statusCode == 200) {
-      // Hiển thị dialog thông báo thành công, bấm OK → quay về màn hình đăng nhập
+      await AuthService.forgotPassword(email: email.trim());
+      
+      if (!context.mounted) return;
+      // Khúc này mình giữ nguyên thiết kế Dialog tuyệt đẹp của bạn nhé
       await showDialog<void>(
         context: context,
         barrierDismissible: false,
@@ -190,7 +156,6 @@ class AuthController extends ChangeNotifier { // ChangeNotifier thông báo cho 
           actionsAlignment: MainAxisAlignment.center,
           actionsPadding: const EdgeInsets.fromLTRB(24, 0, 24, 20),
           actions: [
-            // Nút gradient giống CustomButton
             Container(
               width: double.infinity,
               height: 48,
@@ -212,22 +177,19 @@ class AuthController extends ChangeNotifier { // ChangeNotifier thông báo cho 
                   shadowColor: Colors.transparent,
                   shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
                 ),
-                child: const Text(
-                  'Đăng nhập ngay',
-                  style: TextStyle(
-                    color: Colors.white,
-                    fontWeight: FontWeight.bold,
-                    fontSize: 15,
-                  ),
-                ),
+                child: const Text('Đăng nhập ngay', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 15)),
               ),
             ),
           ],
         ),
       );
-    } else {
-      final errorMsg = message.isNotEmpty ? message : 'Yêu cầu thất bại ($statusCode).';
-      _showSnackBar(context, errorMsg, isError: true);
+    } catch (e) {
+      if (context.mounted) {
+        final errorMsg = e.toString().replaceAll('Exception: ', '');
+        _showSnackBar(context, errorMsg, isError: true);
+      }
+    } finally {
+      _setLoading(false);
     }
   }
 
