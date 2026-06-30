@@ -14,4 +14,5 @@ class AppColors {
   static const Color textMain = Color(0xFF1A1D23);
   static const Color textLight = Color(0xFF9CA3AF);
   static const Color border = Color(0xFFE5E7EB);
+  static const Color mainBackground = Color(0xFFF8F9FA);
 }
