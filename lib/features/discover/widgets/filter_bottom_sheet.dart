@@ -14,9 +14,7 @@ class FilterBottomSheet extends StatefulWidget {
 
 class _FilterBottomSheetState extends State<FilterBottomSheet> {
   late String _priceType;
-  late double _minPrice;
   late double _maxPrice;
-  late int _minCapacity;
   late int _maxCapacity;
 
   final NumberFormat _currencyFormat = NumberFormat.currency(locale: 'vi_VN', symbol: 'đ');
@@ -26,9 +24,7 @@ class _FilterBottomSheetState extends State<FilterBottomSheet> {
     super.initState();
     final controller = context.read<DiscoverController>();
     _priceType = controller.priceType;
-    _minPrice = controller.minPrice;
     _maxPrice = controller.maxPrice;
-    _minCapacity = controller.minCapacity;
     _maxCapacity = controller.maxCapacity;
   }
 
