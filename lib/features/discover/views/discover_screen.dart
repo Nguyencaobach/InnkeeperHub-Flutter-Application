@@ -6,6 +6,7 @@ import '../../../core/theme/app_text_styles.dart';
 import '../controllers/discover_controller.dart';
 import '../widgets/room_card.dart';
 import '../widgets/skeleton_room_card.dart';
+import '../widgets/filter_bottom_sheet.dart';
 
 class DiscoverScreen extends StatefulWidget {
   const DiscoverScreen({super.key});
@@ -64,8 +65,9 @@ class _DiscoverScreenState extends State<DiscoverScreen> {
                           ),
                         ],
                       ),
-                      child: const TextField(
-                        decoration: InputDecoration(
+                      child: TextField(
+                        onChanged: (value) => context.read<DiscoverController>().setSearchQuery(value),
+                        decoration: const InputDecoration(
                           hintText: 'Tìm kiếm loại phòng...',
                           hintStyle: AppTextStyles.hintText,
                           prefixIcon: Icon(Icons.search, color: AppColors.textLight, size: 22),
@@ -96,8 +98,11 @@ class _DiscoverScreenState extends State<DiscoverScreen> {
                     child: IconButton(
                       icon: const Icon(Icons.tune, color: Colors.white),
                       onPressed: () {
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          const SnackBar(content: Text('Tính năng Lọc đang phát triển!')),
+                        showModalBottomSheet(
+                          context: context,
+                          isScrollControlled: true,
+                          backgroundColor: Colors.transparent,
+                          builder: (context) => const FilterBottomSheet(),
                         );
                       },
                     ),
