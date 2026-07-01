@@ -22,4 +22,19 @@ class AppTextStyles {
     fontWeight: FontWeight.normal,
     color: AppColors.textSubtitle, 
   );
+
+  // Chữ gợi ý (hint) cho ô nhập liệu
+  static const TextStyle hintText = TextStyle(
+    fontSize: 14,
+    color: AppColors.textLight,
+  );
+
+  // Tiêu đề lớn
+  static const TextStyle titleLarge = TextStyle(
+    fontSize: 32,
+    fontWeight: FontWeight.w900,
+    fontFamily: 'Arial',
+    color: AppColors.textMain,
+    letterSpacing: 0.5,
+  );
 }

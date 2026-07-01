@@ -2,6 +2,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../../../core/theme/app_colors.dart';
+import '../../../core/theme/app_text_styles.dart';
 import '../controllers/discover_controller.dart';
 import '../widgets/room_card.dart';
 import '../widgets/skeleton_room_card.dart';
@@ -43,13 +44,7 @@ class _DiscoverScreenState extends State<DiscoverScreen> {
               
               const Text(
                 'Discover',
-                style: TextStyle(
-                  fontSize: 32,
-                  fontWeight: FontWeight.w900,
-                  fontFamily: 'Arial',
-                  color: AppColors.textMain,
-                  letterSpacing: 0.5,
-                ),
+                style: AppTextStyles.titleLarge,
               ),
               const SizedBox(height: 24),
 
@@ -60,7 +55,7 @@ class _DiscoverScreenState extends State<DiscoverScreen> {
                       height: 52,
                       decoration: BoxDecoration(
                         color: Colors.white,
-                        borderRadius: BorderRadius.circular(16),
+                        borderRadius: BorderRadius.circular(26),
                         boxShadow: [
                           BoxShadow(
                             color: Colors.black.withOpacity(0.04),
@@ -72,7 +67,7 @@ class _DiscoverScreenState extends State<DiscoverScreen> {
                       child: const TextField(
                         decoration: InputDecoration(
                           hintText: 'Tìm kiếm loại phòng...',
-                          hintStyle: TextStyle(color: AppColors.textLight, fontSize: 14),
+                          hintStyle: AppTextStyles.hintText,
                           prefixIcon: Icon(Icons.search, color: AppColors.textLight, size: 22),
                           border: InputBorder.none,
                           enabledBorder: InputBorder.none,
