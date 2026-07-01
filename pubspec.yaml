@@ -37,6 +37,8 @@ dependencies:
   http: ^1.6.0
   shared_preferences: ^2.3.2  # Lưu token & thông tin user vào bộ nhớ cục bộ
   provider: ^6.1.2             # Global state management
+  shimmer: ^3.0.0
+  intl: ^0.20.3
 
 dev_dependencies:
   flutter_test:

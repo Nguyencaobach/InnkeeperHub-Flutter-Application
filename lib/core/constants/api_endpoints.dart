@@ -7,4 +7,7 @@ class ApiEndpoints {
   static const String register    = '$customerAuth/register';
   static const String login       = '$customerAuth/login';
   static const String forgotPassword = '$customerAuth/forgot-password';
+
+  // --- Customer Discover endpoints ---
+  static const String discoverRoomTypes = '$baseUrl/discover/room-types';
 }
