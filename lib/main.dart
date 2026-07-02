@@ -8,10 +8,7 @@ import 'features/auth/views/login_screen.dart';
 import 'state/user_state.dart';
 import 'features/discover/controllers/discover_controller.dart';
 import 'features/profile/controllers/profile_controller.dart';
-<<<<<<< HEAD
-=======
 import 'features/discover/controllers/room_detail_controller.dart';
->>>>>>> b04b91ac5c0e2244891045922e1748782cb60a6d
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -28,13 +25,8 @@ class MyApp extends StatelessWidget {
         ChangeNotifierProvider(create: (_) => UserState()),
         // Cấp phát Kho chung cho dữ liệu Phòng (Khám phá)
         ChangeNotifierProvider(create: (_) => DiscoverController()), 
-<<<<<<< HEAD
-        // Provider cho Profile
-        ChangeNotifierProvider(create: (_) => ProfileController()),
-=======
         ChangeNotifierProvider(create: (_) => ProfileController()),
         ChangeNotifierProvider(create: (_) => RoomDetailController()),
->>>>>>> b04b91ac5c0e2244891045922e1748782cb60a6d
       ],
       child: MaterialApp(
         title: 'innkeeperHub',

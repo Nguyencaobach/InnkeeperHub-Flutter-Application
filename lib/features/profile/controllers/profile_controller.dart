@@ -35,59 +35,6 @@ class ProfileController extends ChangeNotifier {
     }
   }
 
-<<<<<<< HEAD
-  // Hàm xử lý cập nhật thông tin cá nhân
-  Future<void> updateProfile(
-    BuildContext context, {
-    required String fullName,
-    required int age,
-    required String phoneNumber,
-  }) async {
-    try {
-      final profileService = ProfileService();
-      final success = await profileService.apiUpdateProfile(
-        fullName: fullName,
-        age: age,
-        phoneNumber: phoneNumber,
-      );
-
-      if (success && context.mounted) {
-        // TODO: Nếu `UserState` có hàm hỗ trợ update tên/số điện thoại, bạn có thể gọi ở đây để cập nhật UI ngay lập tức
-        
-        Navigator.pop(context); // Đóng Bottom Sheet sau khi thành công
-        _showSnackBar(context, 'Cập nhật thông tin thành công!');
-      }
-    } catch (e) {
-      final errorMsg = e.toString().replaceAll('Exception: ', '');
-      if (context.mounted) _showSnackBar(context, errorMsg, isError: true);
-    }
-  }
-
-  // Hàm xử lý đổi mật khẩu
-  Future<void> changePassword(
-    BuildContext context, {
-    required String oldPassword,
-    required String newPassword,
-  }) async {
-    try {
-      final profileService = ProfileService();
-      final success = await profileService.apiChangePassword(
-        oldPassword: oldPassword,
-        newPassword: newPassword,
-      );
-
-      if (success && context.mounted) {
-        Navigator.pop(context); // Đóng Bottom Sheet sau khi thành công
-        _showSnackBar(context, 'Thay đổi mật khẩu thành công!');
-      }
-    } catch (e) {
-      final errorMsg = e.toString().replaceAll('Exception: ', '');
-      if (context.mounted) _showSnackBar(context, errorMsg, isError: true);
-    }
-  }
-
-=======
->>>>>>> b04b91ac5c0e2244891045922e1748782cb60a6d
   void _showSnackBar(BuildContext context, String message, {bool isError = false}) {
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
@@ -97,8 +44,4 @@ class ProfileController extends ChangeNotifier {
       ),
     );
   }
-<<<<<<< HEAD
 }
-=======
-}
->>>>>>> b04b91ac5c0e2244891045922e1748782cb60a6d
