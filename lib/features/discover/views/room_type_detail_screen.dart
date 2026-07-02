@@ -46,15 +46,14 @@ class _RoomTypeDetailScreenState extends State<RoomTypeDetailScreen> {
       await context.read<DiscoverController>().submitRoomTypeRating(widget.roomType.id, rating);
       if (!mounted) return;
       
-      if (Navigator.canPop(context)) {
-        Navigator.pop(context); // Đóng loading dialog
-      }
+      Navigator.of(context, rootNavigator: true).pop(); // Đóng loading dialog
       
       // Hiện dialog báo thành công
       await showDialog(
         context: context,
         barrierDismissible: false,
         builder: (context) => Dialog(
+          backgroundColor: Colors.white,
           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
           child: Padding(
             padding: const EdgeInsets.all(24.0),
@@ -93,20 +92,19 @@ class _RoomTypeDetailScreenState extends State<RoomTypeDetailScreen> {
         ),
       );
       
-      if (Navigator.canPop(context)) {
+      if (mounted && Navigator.canPop(context)) {
         Navigator.pop(context, true); // Đóng màn hình detail và truyền cờ true về
       }
     } catch (e) {
       if (!mounted) return;
       
-      if (Navigator.canPop(context)) {
-        Navigator.pop(context); // Đóng loading dialog
-      }
+      Navigator.of(context, rootNavigator: true).pop(); // Đóng loading dialog
       
       // Hiện dialog báo lỗi
       await showDialog(
         context: context,
         builder: (context) => Dialog(
+          backgroundColor: Colors.white,
           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
           child: Padding(
             padding: const EdgeInsets.all(24.0),

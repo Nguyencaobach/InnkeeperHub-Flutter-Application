@@ -41,4 +41,49 @@ class ProfileService {
       }
     }
   }
+  // Hàm cập nhật thông tin cá nhân (và mật khẩu)
+  static Future<UserModel> updateProfile({
+    required String fullName,
+    required String email,
+    required String phoneNumber,
+    String? password,
+  }) async {
+    final token = await TokenStorage.getAccessToken();
+    
+    final Map<String, dynamic> body = {
+      'full_name': fullName,
+      'email': email,
+      'phone_number': phoneNumber,
+    };
+    
+    if (password != null && password.isNotEmpty) {
+      body['password'] = password;
+    }
+
+    final response = await http.put(
+      Uri.parse(ApiEndpoints.customerProfile),
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer $token',
+        'ngrok-skip-browser-warning': 'true',
+      },
+      body: jsonEncode(body),
+    );
+
+    if (response.statusCode >= 200 && response.statusCode < 300) {
+      final jsonBody = jsonDecode(response.body);
+      if (jsonBody['success'] == true) {
+        return UserModel.fromJson(jsonBody['data']);
+      } else {
+        throw Exception(jsonBody['message'] ?? 'Không thể cập nhật thông tin');
+      }
+    } else {
+      try {
+        final jsonBody = jsonDecode(response.body);
+        throw Exception(jsonBody['message'] ?? 'Lỗi máy chủ: ${response.statusCode}');
+      } catch (e) {
+        throw Exception('Lỗi API (${response.statusCode})');
+      }
+    }
+  }
 }

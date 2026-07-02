@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../../core/theme/app_colors.dart';
 
 class InformationAndTermsBottomSheet extends StatelessWidget {
   const InformationAndTermsBottomSheet({Key? key}) : super(key: key);
@@ -8,6 +9,10 @@ class InformationAndTermsBottomSheet extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.all(16.0),
       height: MediaQuery.of(context).size.height * 0.8,
+      decoration: const BoxDecoration(
+        color: AppColors.mainBackground,
+        borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
+      ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [

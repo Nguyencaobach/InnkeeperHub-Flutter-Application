@@ -6,6 +6,8 @@ import '../controllers/profile_controller.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../core/theme/app_text_styles.dart';
 import '../../../state/user_state.dart';
+import '../widgets/detailed_information_bottom_sheet.dart';
+import '../widgets/information_and_terms_bottom_sheet.dart';
 
 class ProfileScreen extends StatelessWidget {
   const ProfileScreen({super.key});
@@ -138,7 +140,14 @@ class ProfileScreen extends StatelessWidget {
                 ),
                 child: Column(
                   children: [
-                    _buildMenuItem(Icons.info_outline, 'Thông tin chi tiết', () {}),
+                    _buildMenuItem(Icons.info_outline, 'Thông tin chi tiết', () {
+                      showModalBottomSheet(
+                        context: context,
+                        isScrollControlled: true,
+                        backgroundColor: Colors.transparent,
+                        builder: (context) => const DetailedInformationBottomSheet(),
+                      );
+                    }),
                     const Divider(height: 1, color: AppColors.border),
                     _buildMenuItem(Icons.bookmark_border, 'Đã lưu', () {}),
                     const Divider(height: 1, color: AppColors.border),
@@ -146,9 +155,14 @@ class ProfileScreen extends StatelessWidget {
                     const Divider(height: 1, color: AppColors.border),
                     _buildMenuItem(Icons.local_offer_outlined, 'Voucher của tôi', () {}),
                     const Divider(height: 1, color: AppColors.border),
-                    _buildMenuItem(Icons.settings_outlined, 'Cài đặt', () {}),
-                    const Divider(height: 1, color: AppColors.border),
-                    _buildMenuItem(Icons.description_outlined, 'Thông tin và điều khoản', () {}),
+                    _buildMenuItem(Icons.description_outlined, 'Thông tin và điều khoản', () {
+                      showModalBottomSheet(
+                        context: context,
+                        isScrollControlled: true,
+                        backgroundColor: Colors.transparent,
+                        builder: (context) => const InformationAndTermsBottomSheet(),
+                      );
+                    }),
                     const Divider(height: 1, color: AppColors.border),
                     _buildMenuItem(
                       Icons.logout,
