@@ -7,9 +7,64 @@ import '../../../core/theme/app_colors.dart';
 import '../../../core/theme/app_text_styles.dart';
 import '../../../state/user_state.dart';
 
+<<<<<<< HEAD
+import '../widgets/history_screen_bottom_sheet.dart';
+import '../widgets/information_and_terms_bottom_sheet.dart';
+import '../widgets/voucher_screen_bottom_sheet.dart';
+import '../widgets/detailed_information_bottom_sheet.dart';
+
 class ProfileScreen extends StatelessWidget {
   const ProfileScreen({super.key});
 
+  void _showDetailedInfo(BuildContext context) {
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true, 
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+      ),
+      builder: (context) => const DetailedInformationBottomSheet(),
+    );
+  }
+
+  void _showHistory(BuildContext context) {
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+      ),
+      builder: (context) => const HistoryScreenBottomSheet(),
+    );
+  }
+
+  void _showVoucher(BuildContext context) {
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+      ),
+      builder: (context) => const VoucherScreenBottomSheet(),
+    );
+  }
+
+  void _showTerms(BuildContext context) {
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+      ),
+      builder: (context) => const InformationAndTermsBottomSheet(),
+    );
+  }
+
+=======
+class ProfileScreen extends StatelessWidget {
+  const ProfileScreen({super.key});
+
+>>>>>>> b04b91ac5c0e2244891045922e1748782cb60a6d
   Widget _buildMenuItem(IconData icon, String title, VoidCallback onTap, {Color? textColor, Color? iconColor}) {
     return ListTile(
       leading: Icon(icon, color: iconColor ?? Colors.black),
@@ -32,13 +87,20 @@ class ProfileScreen extends StatelessWidget {
 
     return Scaffold(
       backgroundColor: AppColors.mainBackground,
+<<<<<<< HEAD
+      body: SafeArea(
+=======
       // Đã xoá AppBar để đẩy giao diện lên trên cùng
       body: SafeArea( // Thêm SafeArea để phần trên không bị lẹm vào thanh trạng thái (pin, wifi)
+>>>>>>> b04b91ac5c0e2244891045922e1748782cb60a6d
         child: SingleChildScrollView(
           padding: const EdgeInsets.all(20.0),
           child: Column(
             children: [
+<<<<<<< HEAD
+=======
               // Vùng 1: Thông tin người dùng
+>>>>>>> b04b91ac5c0e2244891045922e1748782cb60a6d
               Container(
                 decoration: BoxDecoration(
                   color: Colors.white,
@@ -54,6 +116,15 @@ class ProfileScreen extends StatelessWidget {
                 padding: const EdgeInsets.all(20.0),
                 child: Row(
                   children: [
+<<<<<<< HEAD
+                    Consumer<ProfileController>(
+                      builder: (context, profileCtrl, child) {
+                        String getFullImageUrl(String path) {
+                          if (path.isEmpty) return '';
+                          if (path.startsWith('http')) return path;
+                          final domain = ApiEndpoints.baseUrl.replaceAll('/api', '');
+                          return '$domain$path';
+=======
                     // Hình Avatar bấm vào để cập nhật
                     Consumer<ProfileController>(
                       builder: (context, profileCtrl, child) {
@@ -74,16 +145,23 @@ class ProfileScreen extends StatelessWidget {
                           }
                           
                           return '$domain$normalizedPath';
+>>>>>>> b04b91ac5c0e2244891045922e1748782cb60a6d
                         }
 
                         return GestureDetector(
                           onTap: () async {
+<<<<<<< HEAD
+=======
                             // Gọi ImagePicker mở thư viện ảnh
+>>>>>>> b04b91ac5c0e2244891045922e1748782cb60a6d
                             final ImagePicker picker = ImagePicker();
                             final XFile? image = await picker.pickImage(source: ImageSource.gallery);
                             
                             if (image != null && context.mounted) {
+<<<<<<< HEAD
+=======
                               // Gửi đường dẫn ảnh vào Controller để xử lý upload
+>>>>>>> b04b91ac5c0e2244891045922e1748782cb60a6d
                               context.read<ProfileController>().uploadAvatar(context, image.path);
                             }
                           },
@@ -94,9 +172,13 @@ class ProfileScreen extends StatelessWidget {
                                 ? NetworkImage(getFullImageUrl(user.avatarUrl)) 
                                 : null,
                             child: profileCtrl.isUploadingAvatar
+<<<<<<< HEAD
+                                ? const CircularProgressIndicator(color: AppColors.buttonBlue) 
+=======
                                 // Đang tải ảnh thì hiện vòng xoay
                                 ? const CircularProgressIndicator(color: AppColors.buttonBlue) 
                                 // Không có ảnh thì hiện icon mặc định
+>>>>>>> b04b91ac5c0e2244891045922e1748782cb60a6d
                                 : (user.avatarUrl.isEmpty 
                                     ? Icon(Icons.person, size: 45, color: Colors.grey[400]) 
                                     : null),
@@ -105,7 +187,10 @@ class ProfileScreen extends StatelessWidget {
                       }
                     ),
                     const SizedBox(width: 20),
+<<<<<<< HEAD
+=======
                     // Thông tin tên và nút chỉnh sửa bên phải
+>>>>>>> b04b91ac5c0e2244891045922e1748782cb60a6d
                     Expanded(
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
@@ -123,7 +208,10 @@ class ProfileScreen extends StatelessWidget {
                 ),
               ),
               const SizedBox(height: 24),
+<<<<<<< HEAD
+=======
               // Vùng 2: Các chức năng
+>>>>>>> b04b91ac5c0e2244891045922e1748782cb60a6d
               Container(
                 decoration: BoxDecoration(
                   color: Colors.white,
@@ -138,6 +226,19 @@ class ProfileScreen extends StatelessWidget {
                 ),
                 child: Column(
                   children: [
+<<<<<<< HEAD
+                    _buildMenuItem(Icons.info_outline, 'Thông tin chi tiết', () => _showDetailedInfo(context)),
+                    const Divider(height: 1, color: AppColors.border),
+                    _buildMenuItem(Icons.bookmark_border, 'Đã lưu', () {}),
+                    const Divider(height: 1, color: AppColors.border),
+                    _buildMenuItem(Icons.history, 'Lịch sử', () => _showHistory(context)),
+                    const Divider(height: 1, color: AppColors.border),
+                    _buildMenuItem(Icons.local_offer_outlined, 'Voucher của tôi', () => _showVoucher(context)),
+                    const Divider(height: 1, color: AppColors.border),
+                    _buildMenuItem(Icons.settings_outlined, 'Cài đặt', () {}),
+                    const Divider(height: 1, color: AppColors.border),
+                    _buildMenuItem(Icons.description_outlined, 'Thông tin và điều khoản', () => _showTerms(context)),
+=======
                     _buildMenuItem(Icons.info_outline, 'Thông tin chi tiết', () {}),
                     const Divider(height: 1, color: AppColors.border),
                     _buildMenuItem(Icons.bookmark_border, 'Đã lưu', () {}),
@@ -149,6 +250,7 @@ class ProfileScreen extends StatelessWidget {
                     _buildMenuItem(Icons.settings_outlined, 'Cài đặt', () {}),
                     const Divider(height: 1, color: AppColors.border),
                     _buildMenuItem(Icons.description_outlined, 'Thông tin và điều khoản', () {}),
+>>>>>>> b04b91ac5c0e2244891045922e1748782cb60a6d
                     const Divider(height: 1, color: AppColors.border),
                     _buildMenuItem(
                       Icons.logout,
