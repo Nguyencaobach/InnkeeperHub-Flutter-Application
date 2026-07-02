@@ -8,6 +8,7 @@ import '../widgets/room_type_detail_skeleton.dart';
 import 'package:provider/provider.dart';
 import '../controllers/discover_controller.dart';
 import '../widgets/rating_bottom_sheet.dart';
+import 'room_details_screen.dart';
 
 class RoomTypeDetailScreen extends StatefulWidget {
   final RoomTypeModel roomType;
@@ -393,7 +394,17 @@ class _RoomTypeDetailScreenState extends State<RoomTypeDetailScreen> {
                         const SizedBox(width: 16),
                         Expanded(
                           child: ElevatedButton(
-                            onPressed: () {},
+                            onPressed: () {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) => RoomDetailsScreen(
+                                    roomTypeId: room.id,
+                                    roomTypeName: room.name,
+                                  ),
+                                ),
+                              );
+                            },
                             style: ElevatedButton.styleFrom(
                               padding: const EdgeInsets.symmetric(vertical: 16),
                               shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),

@@ -9,7 +9,7 @@ class ApiEndpoints {
   static const String forgotPassword = '$customerAuth/forgot-password';
 
   // --- Customer Discover endpoints ---
-  static const String discoverRoomTypes = '$baseUrl/discover/room-types';
+  static const String discoverRooms = '$baseUrl/discover/rooms';
 
   // --- Customer Profile endpoints (MỚI) ---
   static const String customerProfile = '$baseUrl/customer/profile';
