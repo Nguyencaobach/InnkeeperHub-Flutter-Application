@@ -65,6 +65,27 @@ class RoomCard extends StatelessWidget {
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
                   ),
+                  const SizedBox(height: 4),
+                  
+                  // ĐÁNH GIÁ
+                  if (room.totalReviews == 0)
+                    const Text('Chưa có đánh giá', style: TextStyle(fontSize: 12, color: AppColors.textSubtitle))
+                  else
+                    Row(
+                      children: [
+                        const Icon(Icons.star, size: 14, color: Colors.orangeAccent),
+                        const SizedBox(width: 4),
+                        Text(
+                          room.averageRating.toStringAsFixed(1),
+                          style: const TextStyle(fontSize: 13, fontWeight: FontWeight.bold, color: AppColors.textMain),
+                        ),
+                        const SizedBox(width: 4),
+                        Text(
+                          '(${room.totalReviews} đánh giá)',
+                          style: const TextStyle(fontSize: 12, color: AppColors.textSubtitle),
+                        ),
+                      ],
+                    ),
                   const SizedBox(height: 8),
                   
                   // SỨC CHỨA

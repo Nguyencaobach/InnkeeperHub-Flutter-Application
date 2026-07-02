@@ -24,4 +24,22 @@ class DiscoverService {
       throw Exception(body['message'] ?? 'Không thể tải danh sách phòng');
     }
   }
+
+  static Future<bool> submitRoomTypeRating(String roomTypeId, int rating) async {
+    final urlString = '${ApiEndpoints.discoverRoomTypes}/$roomTypeId/rate';
+    
+    final response = await ApiClient.post(
+      Uri.parse(urlString),
+      body: {'rating': rating},
+      requireAuth: true,
+    );
+    
+    final body = jsonDecode(response.body);
+
+    if (response.statusCode == 200 && body['success'] == true) {
+      return true;
+    } else {
+      throw Exception(body['message'] ?? 'Không thể gửi đánh giá');
+    }
+  }
 }

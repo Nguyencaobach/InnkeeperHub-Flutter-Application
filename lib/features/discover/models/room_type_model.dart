@@ -13,6 +13,8 @@ class RoomTypeModel {
   final String viewType;
   final String roomImgUrl;
   final List<String> amenities; // Tiện ích (Để dành dùng cho màn hình chi tiết sau này)
+  final double averageRating;
+  final int totalReviews;
 
   RoomTypeModel({
     required this.id,
@@ -26,6 +28,8 @@ class RoomTypeModel {
     required this.viewType,
     required this.roomImgUrl,
     required this.amenities,
+    this.averageRating = 0.0,
+    this.totalReviews = 0,
   });
 
   factory RoomTypeModel.fromJson(Map<String, dynamic> json) {
@@ -57,6 +61,26 @@ class RoomTypeModel {
       viewType: json['view_type']?.toString() ?? '...',
       roomImgUrl: json['room_img_url']?.toString() ?? '',
       amenities: parsedAmenities,
+      averageRating: double.tryParse(json['average_rating']?.toString() ?? '0') ?? 0.0,
+      totalReviews: int.tryParse(json['total_reviews']?.toString() ?? '0') ?? 0,
     );
+  }
+
+  Map<String, dynamic> toJson() {
+    return {
+      'id': id,
+      'name': name,
+      'hourly_price': hourlyPrice,
+      'daily_price': dailyPrice,
+      'floor': floor,
+      'capacity': capacity,
+      'bed_type': bedType,
+      'room_size': roomSize,
+      'view_type': viewType,
+      'room_img_url': roomImgUrl,
+      'amenities': amenities,
+      'average_rating': averageRating,
+      'total_reviews': totalReviews,
+    };
   }
 }

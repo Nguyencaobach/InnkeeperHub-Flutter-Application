@@ -6,6 +6,8 @@ class AppColors {
   static const Color logoDarkBlue = Color(0xFF1B3687);  // Màu xanh đậm của chữ "innkeeper"
   static const Color logoLightBlue = Color(0xFF009EEA); // Màu xanh lơ của chữ "Hub"
   static const Color buttonBlue = Color(0xFF1E74F1);    // Màu xanh dương tươi của nút Đăng nhập
+  static const Color buttonYellow = Color(0xFFFFF3CD);  // Màu vàng nhạt cho nút lưu
+  static const Color buttonRate = Color(0xFFF5A623);    // Màu vàng cam nổi bật cho nút đánh giá
   
   static const Color textSubtitle = Color(0xFF757A85);  // Màu xám của chữ "ĐĂNG NHẬP VÀO HỆ THỐNG"
   

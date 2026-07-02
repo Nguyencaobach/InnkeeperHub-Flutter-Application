@@ -124,4 +124,8 @@ class DiscoverController extends ChangeNotifier {
     _isLoading = false;
     notifyListeners();
   }
+
+  Future<void> submitRoomTypeRating(String roomTypeId, int rating) async {
+    await DiscoverService.submitRoomTypeRating(roomTypeId, rating);
+  }
 }

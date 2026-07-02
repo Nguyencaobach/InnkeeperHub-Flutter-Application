@@ -7,6 +7,7 @@ import '../controllers/discover_controller.dart';
 import '../widgets/room_card.dart';
 import '../widgets/skeleton_room_card.dart';
 import '../widgets/filter_bottom_sheet.dart';
+import 'room_type_detail_screen.dart';
 
 class DiscoverScreen extends StatefulWidget {
   const DiscoverScreen({super.key});
@@ -158,7 +159,23 @@ class _DiscoverScreenState extends State<DiscoverScreen> {
                       padding: const EdgeInsets.only(bottom: 20),
                       itemCount: controller.roomTypes.length,
                       itemBuilder: (context, index) {
-                        return RoomCard(room: controller.roomTypes[index]);
+                        final room = controller.roomTypes[index];
+                        return GestureDetector(
+                          onTap: () async {
+                            final result = await Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => RoomTypeDetailScreen(roomType: room),
+                              ),
+                            );
+                            if (result == true) {
+                              if (context.mounted) {
+                                context.read<DiscoverController>().fetchRoomTypes();
+                              }
+                            }
+                          },
+                          child: RoomCard(room: room),
+                        );
                       },
                     );
                   },
