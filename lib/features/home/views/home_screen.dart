@@ -20,6 +20,7 @@ class HomeScreen extends StatefulWidget {
 class _HomeScreenState extends State<HomeScreen> {
   late PageController _pageController;
   int _currentIndex = 2; // Mặc định mở trang Home ở giữa
+  final GlobalKey<NavigatorState> _discoverNavKey = GlobalKey<NavigatorState>();
 
   @override
   void initState() {
@@ -38,7 +39,8 @@ class _HomeScreenState extends State<HomeScreen> {
     if (_currentIndex == index) {
       // 1. TRƯỜNG HỢP NHẤN LẠI TAB ĐANG MỞ (Tự động Load lại dữ liệu)
       if (index == 1) { 
-        // Index 1 là tab Khám phá -> Kêu Kho chung tải lại API
+        // Index 1 là tab Khám phá -> Quay về trang gốc và kêu Kho chung tải lại API
+        _discoverNavKey.currentState?.popUntil((route) => route.isFirst);
         context.read<DiscoverController>().fetchRoomTypes();
       }
       // Sau này làm tab Hoạt động (index 0) bạn cũng có thể thêm logic tương tự ở đây
@@ -66,12 +68,19 @@ class _HomeScreenState extends State<HomeScreen> {
         controller: _pageController,
         onPageChanged: _onPageChanged,
         physics: const BouncingScrollPhysics(),
-        children: const [
-          ActivityScreen(),
-          DiscoverScreen(),
-          _HomeTabContent(),
-          ChatScreen(),
-          ProfileScreen(),
+        children: [
+          const ActivityScreen(),
+          Navigator(
+            key: _discoverNavKey, // Dùng key cố định để giữ state và điều khiển từ xa
+            onGenerateRoute: (settings) {
+              return MaterialPageRoute(
+                builder: (context) => const DiscoverScreen(),
+              );
+            },
+          ),
+          const _HomeTabContent(),
+          const ChatScreen(),
+          const ProfileScreen(),
         ],
       ),
       bottomNavigationBar: Container(
