@@ -343,7 +343,7 @@ class _RoomTypeDetailScreenState extends State<RoomTypeDetailScreen> {
 
                   // Property Details
                   Text(
-                    'Property Details',
+                    'Thông tin chi tiết',
                     style: AppTextStyles.titleLarge.copyWith(fontSize: 20),
                   ),
                   const SizedBox(height: 16),
@@ -353,7 +353,7 @@ class _RoomTypeDetailScreenState extends State<RoomTypeDetailScreen> {
                   // Phần Tiện ích (Amenities)
                   if (room.amenities.isNotEmpty) ...[
                     Text(
-                      'Amenities',
+                      'Tiện ích',
                       style: AppTextStyles.titleLarge.copyWith(fontSize: 20),
                     ),
                     const SizedBox(height: 16),

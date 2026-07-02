@@ -36,7 +36,7 @@ class DiscoverService {
     
     final body = jsonDecode(response.body);
 
-    if (response.statusCode == 200 && body['success'] == true) {
+    if (response.statusCode >= 200 && response.statusCode < 300 && body['success'] == true) {
       return true;
     } else {
       throw Exception(body['message'] ?? 'Không thể gửi đánh giá');

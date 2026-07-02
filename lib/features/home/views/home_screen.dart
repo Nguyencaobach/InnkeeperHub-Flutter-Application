@@ -118,17 +118,6 @@ class _HomeTabContent extends StatelessWidget {
         title: const Text('Trang chủ', style: TextStyle(color: AppColors.textMain, fontWeight: FontWeight.bold)),
         backgroundColor: Colors.white,
         elevation: 0.5,
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.logout, color: Colors.redAccent),
-            tooltip: 'Đăng xuất',
-            onPressed: () async {
-              await context.read<UserState>().logout();
-              if (!context.mounted) return;
-              Navigator.pushNamedAndRemoveUntil(context, '/login', (route) => false);
-            },
-          ),
-        ],
       ),
       body: SafeArea(
         child: Center(

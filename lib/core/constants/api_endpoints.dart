@@ -10,4 +10,8 @@ class ApiEndpoints {
 
   // --- Customer Discover endpoints ---
   static const String discoverRoomTypes = '$baseUrl/discover/room-types';
+
+  // --- Customer Profile endpoints (MỚI) ---
+  static const String customerProfile = '$baseUrl/customer/profile';
+  static const String uploadAvatar    = '$baseUrl/customer/avatar';
 }

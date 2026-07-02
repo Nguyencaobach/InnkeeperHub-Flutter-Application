@@ -34,6 +34,12 @@ class UserState extends ChangeNotifier {
     notifyListeners(); // Hét lên cho các màn hình vẽ lại
   }
 
+  // ─── CẬP NHẬT LẠI USER KHI CÓ THAY ĐỔI (ĐỔI ẢNH, ĐỔI TÊN...) ────────────
+  void updateUser(UserModel updatedUser) {
+    _currentUser = updatedUser; // Thay thẻ căn cước mới
+    notifyListeners(); // Vẽ lại giao diện ngay lập tức
+  }
+
   // ─── KHÔI PHỤC KHI MỞ LẠI APP ───────────────────────────────────────────
   Future<void> loadFromStorage() async {
     final token = await TokenStorage.getAccessToken();
