@@ -6,7 +6,6 @@ import '../controllers/room_detail_controller.dart';
 import '../widgets/room_detail_card.dart';
 import '../widgets/skeleton_room_detail_card.dart';
 import '../../../core/theme/app_text_styles.dart';
-import '../widgets/room_detail_filter_bottom_sheet.dart';
 
 class RoomDetailsScreen extends StatefulWidget {
   final String roomTypeId;
@@ -113,33 +112,6 @@ class _RoomDetailsScreenState extends State<RoomDetailsScreen> {
                           contentPadding: EdgeInsets.symmetric(vertical: 16),
                         ),
                       ),
-                    ),
-                  ),
-                  const SizedBox(width: 12),
-                  Container(
-                    height: 52,
-                    width: 52,
-                    decoration: BoxDecoration(
-                      color: AppColors.buttonBlue,
-                      borderRadius: BorderRadius.circular(16),
-                      boxShadow: [
-                        BoxShadow(
-                          color: AppColors.buttonBlue.withOpacity(0.3),
-                          blurRadius: 8,
-                          offset: const Offset(0, 4),
-                        ),
-                      ],
-                    ),
-                    child: IconButton(
-                      icon: const Icon(Icons.tune, color: Colors.white),
-                      onPressed: () {
-                        showModalBottomSheet(
-                          context: context,
-                          isScrollControlled: true,
-                          backgroundColor: Colors.transparent,
-                          builder: (context) => const RoomDetailFilterBottomSheet(),
-                        );
-                      },
                     ),
                   ),
                 ],
