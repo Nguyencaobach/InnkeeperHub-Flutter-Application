@@ -60,9 +60,20 @@ class ProfileScreen extends StatelessWidget {
                         // Hàm xử lý link ảnh (Nối domain nếu là link tương đối /uploads/...)
                         String getFullImageUrl(String path) {
                           if (path.isEmpty) return '';
-                          if (path.startsWith('http')) return path;
+                          
+                          // Đổi dấu \ thành / (đề phòng backend lưu đường dẫn kiểu Windows)
+                          String normalizedPath = path.replaceAll('\\', '/');
+                          
+                          if (normalizedPath.startsWith('http')) return normalizedPath;
+                          
                           final domain = ApiEndpoints.baseUrl.replaceAll('/api', '');
-                          return '$domain$path';
+                          
+                          // Đảm bảo có dấu / ở đầu trước khi nối với domain
+                          if (!normalizedPath.startsWith('/')) {
+                            normalizedPath = '/$normalizedPath';
+                          }
+                          
+                          return '$domain$normalizedPath';
                         }
 
                         return GestureDetector(
